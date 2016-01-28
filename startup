@@ -1,0 +1,122 @@
+local w,h = term.getSize()
+local choice = 1
+local brunning = true
+local conf = {}
+
+if fs.exists("main.config") then
+  local t = {}
+  local ok, err = pcall(dofile,"main.config")
+  if ok then
+    if type(err) == "table" then
+      conf = err
+    end
+  else
+    term.setBackgroundColour(colours.blue)
+    term.setTextColour(colours.white)
+    term.clear()
+    term.setCursorPos(2,2)
+    print("Impulse System Protection")
+    term.setCursorPos(1,4)
+    print("Your config is incorrect!")
+  end
+end
+
+local biosMenu = {
+  {
+    sName = "Configuration",
+    fFunction = function() end,
+  },
+  {
+    sName = "File Manager",
+    fFunction = function() end,
+  },
+  {
+    sName = "Shutdown",
+    fFunction = os.shutdown,
+  },
+  {
+    sName = "Reboot",
+    fFunction = os.reboot,
+  },
+}
+
+function printCentered(string,y)
+  local x = math.floor(w/2)-math.floor(#string/2)
+  term.setCursorPos(x,y)
+  print(string)
+end
+
+function renderBIOS()
+  term.setBackgroundColour(colours.white)
+  term.setTextColour(colours.black)
+  term.clear()
+  term.setCursorPos(1,1)
+  term.setBackgroundColour(colours.grey)
+  term.clearLine()
+  term.setTextColour(colours.black)
+  printCentered("CubeSpace Impulse - Setup",1)
+  term.setBackgroundColour(colours.white)
+  term.setTextColour(colours.black)
+  for i,v in pairs(biosMenu) do
+    if i == choice then
+      printCentered("[ "..v.sName.." ]",i+2)
+    else
+      printCentered(v.sName,i+2)
+    end
+  end
+end
+
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function slowPrintCentered(string,y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  textutils.slowPrint(string)
+end
+
+term.setBackgroundColour(colours.grey)
+clearScr()
+term.setTextColour(colours.black)
+printCentered("Press ALT to enter setup.",h-1)
+
+local startBios = false
+
+parallel.waitForAny(function()
+  slowPrintCentered("Welcome to Impulse.",2)
+  slowPrintCentered("It's only light years ahead.",3)
+  sleep(3)
+end,
+function()
+  local key
+  repeat
+    event, key = os.pullEvent("key")
+  until key == keys.leftAlt or key == keys.rightAlt
+  startBios = true
+end)
+
+if startBios == true then
+  while brunning do
+    renderBIOS()
+    local e = {os.pullEventRaw()}
+    if e[1] == "key" then
+      if e[2] == keys.up then
+        if choice == 1 then
+          choice = #biosMenu
+        else
+          choice = choice - 1
+        end
+      elseif e[2] == keys.down then
+        if choice == #biosMenu then
+          choice = 1
+        else
+          choice = choice + 1
+        end
+      elseif e[2] == keys.enter then
+        biosMenu[choice].fFunction()
+      end
+    end
+  end
+end

@@ -119,4 +119,6 @@ if startBios == true then
       end
     end
   end
+else
+  shell.run("/gui")
 end

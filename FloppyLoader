@@ -1,0 +1,133 @@
+local w,h = term.getSize()
+local t = peripheral.getNames()
+local side
+for i,v in pairs(t) do
+  if peripheral.getType(v) == "drive" then
+    side = v
+  end
+end
+
+if not side then
+  term.setBackgroundColour(colours.grey)
+  term.setTextColour(colours.black)
+  term.clear()
+  term.setCursorPos(3,3)
+  print("You need a disk drive!")
+  sleep(2)
+  return
+end
+
+function printCentered(string, y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  print(string)
+end
+
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function play()
+  -- safety check
+  if not disk.isPresent(side) then
+    return
+  end
+  local mountPath = disk.getMountPath(side)
+  if not mountPath then
+    return
+  end
+  -- play
+  if fs.isDir(fs.combine(mountPath, "apis")) then
+    for i,v in pairs(fs.list(fs.combine(mountPath, "apis"))) do
+      local ok, err = pcall(os.loadAPI,fs.combine(mountPath,"apis/"..v))
+    end
+  end
+  if fs.exists(fs.combine(mountPath, "startgame")) then
+    -- RedCube, some multiplatform games
+    shell.run("/"..fs.combine(mountPath, "startgame"))
+  elseif fs.exists(fs.combine(mountPath, "info")) then
+    -- RedCast and 1% of multiplatform games
+    -- it would be a bad idea to run Aurora games
+    local gameInfo = setfenv(loadfile(fs.combine(mountPath, "info")), getfenv())()
+    if gameInfo.sGameFile then
+      shell.run("/"..fs.combine(mountPath, gameInfo.sGameFile))
+    end
+  end
+end
+
+function install()
+  -- safety check
+  if not disk.isPresent(side) then
+    return
+  end
+  local mountPath = disk.getMountPath(side)
+  if not mountPath then
+    return
+  end
+  if fs.isDir(mountPath, "apis") then
+    for i,v in pairs(fs.list(fs.combine(mountPath,"apis"))) do
+      local ok,err = pcall(os.loadAPI,fs.combine(mountPath,"apis/"..v))
+      if ok then
+        fs.copy(fs.combine(mountPath,"apis/"..v),"apis/"..v)
+      end    
+    end
+  end
+  -- install
+  if fs.exists(fs.combine(mountPath, "info")) then
+    -- RedCast and 1% of multiplatform games
+    -- it would be a bad idea to install Aurora games
+    local gameInfo = setfenv(loadfile(fs.combine(mountPath, "info")), getfenv())()
+    fs.copy(fs.combine(mountPath, gameInfo.sGameFile), fs.combine("games", gameInfo.sName))
+    if gameInfo.bRequiresExtraFiles then
+      for i, v in ipairs(gameInfo.tExtraFiles) do
+        fs.copy(fs.combine(mountPath, v), v)
+      end
+    end
+  end
+  term.setBackgroundColour(colours.lightGrey)
+  term.setTextColour(colours.black)
+  term.clear()
+  term.setCursorPos(2,2)
+  print("Installed!")
+  sleep(2)
+  return
+end
+
+function render()
+  term.current().setVisible(false)
+  term.setBackgroundColour(colours.lightGrey)
+  term.setTextColour(colours.black)
+  clearScr()
+  term.setBackgroundColour(colours.grey)
+  term.clearLine()
+  printCentered("Impulse Floppy Loader",1)
+  term.setCursorPos(w,1)
+  term.setBackgroundColour(colours.red)
+  term.write("X")
+  if disk.isPresent(side) then
+    paintutils.drawPixel(w-1,1,colours.green)
+  end
+  term.setCursorPos(2,3)
+  term.setBackgroundColour(colours.lightGrey)
+  term.write("Install")
+  term.setCursorPos(2,4)
+  term.write("Play")
+  term.current().setVisible(true)
+end
+
+while true do
+  render()
+  local e = {os.pullEventRaw()}
+  if e[1] == "mouse_click" then
+    if e[3] >= 2 and e[3] <= 8 and e[4] == 3 then
+      --Install
+      install()
+    elseif e[3] >= 2 and e[3] <= 5 and e[4] == 4 then
+      --Play from disk
+      play()
+    elseif e[3] == w and e[4] == 1 then
+      return
+    end
+  end
+end

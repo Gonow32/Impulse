@@ -4,6 +4,7 @@ return {
   "menu/floppy",
   "menu/play",
   "menu/help",
+  "menu/music",
   "gamelib",
   "gui",
   "ui.config",
@@ -12,4 +13,5 @@ return {
   "help",
   "gamelib",
   "FloppyLoader",
+  "music",
 }

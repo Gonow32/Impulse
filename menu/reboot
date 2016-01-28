@@ -1,0 +1,4 @@
+return {
+  sName = "Reboot",
+  fFunction = function() os.reboot() end,
+}

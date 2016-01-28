@@ -7,6 +7,16 @@ for i,v in pairs(temp) do
   menuItems[i] = dofile("menu/"..v)
 end
 
+if not fs.isDir("/apis") then
+  if fs.exists("/apis") then
+    fs.delete("/apis")
+  end
+  fs.makeDir("/apis")
+end
+for i,v in pairs(fs.list("/apis")) do
+  os.loadAPI("/apis/"..v)
+end
+
 function clearScr()
   term.clear()
   term.setCursorPos(1,1)

@@ -1,0 +1,73 @@
+local w,h = term.getSize()
+local topicdir = “/HelpTopics"
+
+if not fs.isDir(topicdir) then
+  if fs.exists(topicdir) then
+    fs.delete(topicdir)
+  end
+  fs.makeDir(topicdir)
+end
+
+local files = fs.list(topicdir)
+local topics = {}
+for i,v in pairs(files) do
+  topics[i] = dofile(topicdir..v)
+end
+
+function updateTopics()
+  local files = fs.list(topicdir)
+  for i,v in pairs(files) do
+    topics[i] = dofile(topicdir..v)
+  end
+end
+
+term.setBackgroundColour(colours.lightGrey)
+term.clear()
+
+function renderMenu()
+  term.setCursorPos(1,1)
+  term.setBackgroundColour(colours.grey)
+  term.setTextColour(colours.black)
+  for i = 1,h-1 do
+    print("          ")
+  end
+  term.write(" Quit     ")
+  term.setCursorPos(1,1)
+  for i,v in pairs(topics) do
+    if #v.sName > 8 then
+      print(" "..v.sName:sub(1,8))
+    else
+      print(" "..v.sName)
+    end
+  end
+end
+
+while true do
+  renderMenu()
+  local e = {os.pullEvent("mouse_click")}
+  term.setTextColour(colours.black)
+  --term.redirect(wTopic)
+  --print("X: "..e[3].." Y: "..e[4])
+  ---term.redirect(wNormal)
+  if e[3] >= 1 and e[3] <= 10 then
+    if topics[e[4]] then
+      local temp = topics[e[4]]
+      local normal = term.current()
+      local temp2 = window.create(normal, 11, 1, w, h)
+      term.redirect(temp2)
+      term.setBackgroundColour(colours.lightGrey)
+      term.setTextColour(colours.black)
+      term.clear()
+      term.setCursorPos(1,1)
+      print(temp.sContents)
+      term.redirect(normal)
+    elseif e[4] == h then
+      term.setBackgroundColour(colours.black)
+      term.setTextColour(colours.white)
+      term.clear()
+      term.setCursorPos(1,1)
+      return
+    end
+  end
+  updateTopics()
+end

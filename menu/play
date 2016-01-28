@@ -1,0 +1,4 @@
+return {
+  sName = "Play",
+  fFunction = function() shell.run("/gamelib") end,
+}

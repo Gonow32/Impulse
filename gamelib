@@ -1,0 +1,104 @@
+term.setTextColor(colors.white)
+term.setBackgroundColor(colors.black)
+term.clear()
+if #fs.list("games") < 1 then
+  term.setCursorPos(2, 2)
+  printError("No games installed!")
+  sleep(2)
+  return false
+end
+
+local function center(text, y)
+  local w, h = term.getSize()
+  local x = math.ceil(w / 2) - math.floor(text:len() / 2)
+  term.setCursorPos(x, y)
+  term.write(text)
+end
+
+local scrollY = 0
+local selected = 1
+
+local gameNames
+
+local function rebuildGameList()
+  gameNames = {}
+  for i, v in pairs(fs.list("games")) do
+    table.insert(gameNames, v)
+  end
+  table.sort(gameNames)
+end
+rebuildGameList()
+
+local function redraw()
+  term.current().setVisible(false)
+  local termw, termh = term.getSize()
+  term.setTextColor(colors.black)
+  term.setBackgroundColor(colors.white)
+  term.clear()
+  term.setCursorPos(1, 1)
+  term.setBackgroundColor(colors.lightGray)
+  term.clearLine()
+  center("Games", 1)
+  term.setCursorPos(1, termh)
+  term.clearLine()
+  term.write("Q - Quit, D - Delete")
+  term.setBackgroundColor(colors.white)
+  local num = 2 - scrollY
+  for i, name in ipairs(gameNames) do
+    if num > 1 and num < termh then
+      term.setCursorPos(1, num)
+      if selected == i then
+        term.write("> ")
+      else
+        term.write("  ")
+      end
+      term.write(name)
+    end
+    num = num + 1
+    if num > termh - 1 then
+      break
+    end
+  end
+  term.current().setVisible(true)
+end
+
+while true do
+  redraw()
+  -- handle events
+  local ev = {os.pullEvent()}
+  local termw, termh = term.getSize()
+  if ev[1] == "key" then
+    if ev[2] == keys.q then
+      return true
+    elseif ev[2] == keys.d then
+      term.clear()
+      term.setCursorPos(2, 2)
+      term.write("Delete "..gameNames[selected].."? [yN]")
+      local e, k = os.pullEvent("key")
+      if k == keys.y then
+        fs.delete(fs.combine("games", gameNames[selected]))
+        rebuildGameList()
+      end
+    elseif ev[2] == keys.up then
+      selected = selected - 1
+    elseif ev[2] == keys.down then
+      selected = selected + 1
+    elseif ev[2] == keys.enter then
+      shell.run("\"/games/"..gameNames[selected].."\"")
+    end
+  end
+  if #gameNames < 1 then
+    return false
+  end
+  -- fix cursor
+  if selected > #gameNames then
+    selected = 1
+  elseif selected < 1 then
+    selected = #gameNames
+  end
+  if selected < scrollY + 1 then
+    scrollY = selected - 1
+  elseif selected > scrollY + termh - 2 then
+    scrollY = selected - termh + 2
+  end
+end

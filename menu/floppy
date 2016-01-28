@@ -1,4 +1,4 @@
 return {
   sName = "Floppy",
-  fFunction = function() shell.run("FloppyLoader") end,
+  fFunction = function() shell.run("/FloppyLoader") end,
 }

@@ -39,7 +39,7 @@ function drawPlayer()
   term.setBackgroundColour(colours.white)
   term.setTextColour(colours.black)
   term.clearLine()
-  printCentered("Ecouter Vinyl Player",1)
+  printCentered("Impulse Vinyl Player",1)
   term.setCursorPos(1,h)
   term.clearLine()
   if disk.isPresent(side) then

@@ -1,5 +1,5 @@
 local w,h = term.getSize()
-local topicdir = “/HelpTopics"
+local topicdir = "/HelpTopics"
 
 if not fs.isDir(topicdir) then
   if fs.exists(topicdir) then

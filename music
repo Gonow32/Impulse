@@ -1,0 +1,120 @@
+local w,h = term.getSize()
+local names = peripheral.getNames()
+local isPlaying = false
+local side
+for i,v in pairs(names) do
+  if peripheral.getType(v) == "drive" then
+    side = v
+  end
+end
+
+function printCentered(string,y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  term.write(string)
+end
+
+if not side then
+  while true do
+    term.setBackgroundColour(colours.grey)
+    term.setTextColour(colours.white)
+    term.clear()
+    printCentered("You need a disk drive to play vinyls.",2)
+    term.setCursorPos(2,h-1)
+    print("Exit")
+    local e = {os.pullEventRaw()}
+    if e[1] == "mouse_click" then
+      if e[3] >= 2 and e[3] <= 5 and e[4] == h-1 then
+        return
+      end
+    end
+  end
+end
+
+function drawPlayer()
+  term.current().setVisible(false)
+  term.setBackgroundColour(colours.grey)
+  term.clear()
+  term.setCursorPos(1,1)
+  term.setBackgroundColour(colours.white)
+  term.setTextColour(colours.black)
+  term.clearLine()
+  printCentered("Ecouter Vinyl Player",1)
+  term.setCursorPos(1,h)
+  term.clearLine()
+  if disk.isPresent(side) then
+    if disk.hasAudio(side) then
+      if isPlaying == true then
+        printCentered("Playing "..disk.getAudioTitle(side),h)
+      else
+        printCentered(disk.getAudioTitle(side),h)
+      end
+    else
+      printCentered("Incompatible disk",h)
+    end
+  else
+    printCentered("No disk",h)
+  end
+  term.setCursorPos(2,h-2)
+  term.setBackgroundColour(colours.grey)
+  term.setTextColour(colours.white)
+  if isPlaying == true then
+    term.setTextColour(colours.lightBlue)
+  end
+  term.write("Play ")
+  term.setTextColour(colours.white)
+  if isPlaying ~= true then
+    term.setTextColour(colours.lightBlue)
+  end
+  term.write("Pause ")
+  term.setTextColour(colours.white)
+  term.write("Exit Eject")
+  term.current().setVisible(true)
+end
+
+while true do
+  drawPlayer()
+  local t = os.startTimer(0.5)
+  local e = {os.pullEventRaw()}
+  if e[1] == "mouse_click" then
+    if e[4] == h-2 then
+      if e[3] >= 2 and e[3] <= 5 then
+        if isPlaying ~= true then
+          if disk.isPresent(side) then
+            if disk.hasAudio(side) then
+              disk.playAudio(side)
+              isPlaying = true
+            end
+          end
+        end
+      elseif e[3] >= 7 and e[3] <= 11 then
+        if isPlaying == true then
+          disk.stopAudio()
+          isPlaying = false
+        end
+      elseif e[3] >= 13 and e[3] <= 16 then
+        if isPlaying == true then
+          disk.stopAudio()
+          isPlaying = false
+        end
+        term.setBackgroundColour(colours.black)
+        term.setTextColour(colours.white)
+        term.clear()
+        term.setCursorPos(1,1)
+        return
+      elseif e[3] >= 18 and e[3] <= 22 then
+        if isPlaying == true then
+          disk.stopAudio()
+          isPlaying = false
+        end
+        disk.eject(side)
+      end
+    end
+  elseif e[1] == "timer" then
+    if not disk.isPresent(side) then
+      isPlaying = false
+    elseif not disk.hasAudio(side) then
+      isPlaying = false
+    end
+  end
+end

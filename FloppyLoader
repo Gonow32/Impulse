@@ -65,7 +65,7 @@ function install()
   if not mountPath then
     return
   end
-  if fs.isDir(mountPath, "apis") then
+  if fs.isDir(fs.combine(mountPath, "apis")) then
     for i,v in pairs(fs.list(fs.combine(mountPath,"apis"))) do
       local ok,err = pcall(os.loadAPI,fs.combine(mountPath,"apis/"..v))
       if ok then

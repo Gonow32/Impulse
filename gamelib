@@ -1,6 +1,14 @@
 term.setTextColor(colors.white)
 term.setBackgroundColor(colors.black)
 term.clear()
+
+if not fs.isDir("/games") then
+  if fs.exists("/games") then
+    fs.delete("/games")
+  end
+  fs.makeDir("/games")
+end
+
 if #fs.list("games") < 1 then
   term.setCursorPos(2, 2)
   printError("No games installed!")

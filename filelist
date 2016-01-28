@@ -1,0 +1,15 @@
+return {
+  "menu/shutdown",
+  "menu/reboot",
+  "menu/floppy",
+  "menu/play",
+  "menu/help",
+  "gamelib",
+  "gui",
+  "ui.config",
+  "startup",
+  "main.config",
+  "help",
+  "gamelib",
+  "FloppyLoader",
+}

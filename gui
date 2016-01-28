@@ -1,0 +1,81 @@
+local w,h = term.getSize()
+local menuActive = 0
+local config = dofile("ui.config")
+local temp = fs.list("menu")
+local menuItems = {}
+for i,v in pairs(temp) do
+  menuItems[i] = dofile("menu/"..v)
+end
+
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function printCentered(string, y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  print(string)
+end
+
+function drawMenuBar()
+  term.setCursorPos(1,1)
+  term.setBackgroundColour(config.nMenuBarColour)
+  term.clearLine()
+  term.setTextColour(config.nMenuBarText)
+  printCentered(config.sSystemName,1)
+  term.setCursorPos(1,1)
+  term.write("Menu")
+end
+
+function drawMenu()
+  term.setCursorPos(1,2)
+  term.setBackgroundColour(config.nMenuColour)
+  term.setTextColour(config.nMenuText)
+  for i = 1,h-2 do
+    print("          ")
+  end
+  term.write("          ")
+  term.setCursorPos(1,2)
+  for i,v in pairs(menuItems) do
+    print(" "..v.sName)
+  end
+  term.setBackgroundColour(config.nBackgroundColour)
+end
+
+function drawDesktop()
+  term.current().setVisible(false)
+  term.setBackgroundColour(config.nBackgroundColour)
+  clearScr()
+  local image = paintutils.loadImage(config.sBackground)
+  local function temp()
+    paintutils.drawImage(image,1,1)
+  end
+  local ok, err = pcall(temp)
+  drawMenuBar()
+  if menuActive == 1 then
+    drawMenu()
+  end
+  term.current().setVisible(true)
+end
+
+while true do
+  drawDesktop()
+  local e = {os.pullEvent()}
+  if e[1] == "mouse_click" then
+    if e[3] >= 1 and e[3] <= 4 and e[4] == 1 then
+      if menuActive == 0 then
+        menuActive = 1
+      else
+        menuActive = 0
+      end
+    elseif menuActive == 1 and (e[4]-1) <= #menuItems and e[3] >= 1 and e[3] <= 10 then
+      local func = menuItems[e[4]-1]
+      func.fFunction()
+      menuActive = 0
+      drawDesktop()
+    else
+      menuActive = 0
+    end
+  end
+end

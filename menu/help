@@ -1,4 +1,4 @@
 return {
   sName = "Help",
-  fFunction = function() shell.run(“/help") end,
+  fFunction = function() shell.run("/help") end,
 }

@@ -5,6 +5,7 @@ return {
   "menu/play",
   "menu/help",
   "menu/music",
+  "menu/update",
   "gamelib",
   "gui",
   "ui.config",
@@ -14,4 +15,5 @@ return {
   "gamelib",
   "FloppyLoader",
   "music",
+  "update",
 }

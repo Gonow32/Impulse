@@ -1,0 +1,59 @@
+local w, h = term.getSize()
+
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function printCentered(string,y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  term.write(string)
+end
+
+function render()
+  term.setBackgroundColour(colours.lightGrey)
+  clearScr()
+  term.setBackgroundColour(colours.grey)
+  term.setTextColour(colours.black)
+  term.clearLine()
+  printCentered("Impulse Information",1)
+  term.setCursorPos(w-1)
+  term.write("X")
+  term.setBackgroundColour(colours.lightGrey)
+  term.setCursorPos(2,3)
+  local build = ""
+  local f = fs.open("/build","r")
+  build = f.readAll()
+  f.close()
+  if not build then
+    build = "Unknown Version"
+  end
+  local consoleName = "Impulse"
+  local ok, err = pcall(dofile,"main.config")
+  if ok then
+    if type(err) == "table" then
+      if err.sConsoleName then
+        consoleName = err.sConsoleName
+      end
+    end
+  end
+  print("Impulse System Software "..build)
+  term.setCursorPos(2,4)
+  print("Console Name: "..consoleName)
+  term.setCursorPos(2,5)
+  print("Computer Label: "..os.getComputerLabel())
+end
+
+while true do
+  render()
+  local e = {os.pullEvent()}
+  if e[1] == "mouse_click" then
+    if e[3] == w-1 and e[4] == 1 then
+      term.setBackgroundColour(colours.black)
+      term.setTextColour(colours.white)
+      clearScr()
+      return
+    end
+  end
+end

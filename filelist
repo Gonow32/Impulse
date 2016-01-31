@@ -6,6 +6,7 @@ return {
   "menu/help",
   "menu/music",
   "menu/update",
+  "menu/info",
   "gamelib",
   "gui",
   "ui.config",
@@ -18,4 +19,5 @@ return {
   "update",
   "build",
   "firstRun",
+  "info",
 }

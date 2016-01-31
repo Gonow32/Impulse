@@ -1,0 +1,4 @@
+return {
+  sName = "Info",
+  fFunction = function() shell.run("/info") end,
+}

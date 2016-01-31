@@ -72,7 +72,7 @@ if ok then
         f.close()
         local t2 = "return "..textutils.serialize(err2)
         local f2 = fs.open("ui.config","w")
-        f2.write(t)
+        f2.write(t2)
         f2.close()
         return
       else

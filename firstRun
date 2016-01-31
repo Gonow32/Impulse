@@ -1,0 +1,89 @@
+os.pullEvent = os.pullEventRaw
+local w, h = term.getSize()
+local settings = {}
+
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function printCentered(string,y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  term.write(string)
+end
+
+function renderMain()
+  term.setBackgroundColour(colours.lightGrey)
+  term.setTextColour(colours.black)
+  clearScr()
+  term.setBackgroundColour(colours.grey)
+  term.clearLine()
+  printCentered("Impulse Setup",1)
+  term.setCursorPos(1,2)
+  term.setBackgroundColour(colours.lightGrey)
+  term.setTextColour(colours.white)
+end
+
+renderMain()
+term.setCursorPos(2,3)
+print("Welcome to Impulse!")
+term.setCursorPos(2,4)
+print("Press any key to continue.")
+os.pullEvent("key")
+local isColour = false
+local colour = colours.white
+repeat
+  renderMain()
+  term.setCursorPos(2,3)
+  term.write("Enter Background Colour: ")
+  local input = read()
+  if colours[input:lower()] then
+    isColour = true
+    colour = colours[input:lower()]
+  elseif colors[input:lower()] then
+    isColour = true
+    colour = colors[input:lower()]
+  end
+until isColour == true
+settings.nBackgroundColour = colour
+renderMain()
+term.setCursorPos(2,3)
+term.write("Console Name: ")
+local input = read()
+settings.sConsoleName = input
+renderMain()
+term.setCursorPos(2,3)
+term.write("Computer Label: ")
+local input = read()
+os.setComputerLabel(input)
+local ok, err = dofile("main.config")
+if ok then
+  if type(err) == "table" then
+    err.sConsoleName = settings.sConsoleName
+    err.firstRun = false
+    local ok2, err2 = dofile("ui.config")
+    if ok2 then
+      if type(err2) == "table" then
+        err2.nBackgroundColour = settings.nBackgroundColour
+        local t = "return "..textutils.serialize(err)
+        local f = fs.open("main.config","w")
+        f.write(t)
+        f.close()
+        local t2 = "return "..textutils.serialize(err2)
+        local f2 = fs.open("ui.config","w")
+        f2.write(t)
+        f2.close()
+        return
+      else
+        return
+      end
+    else
+      return
+    end
+  else
+    return
+  end
+else
+  return
+end

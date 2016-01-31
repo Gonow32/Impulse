@@ -26,6 +26,14 @@ end
 renderUpdater()
 local t = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/master/build")
 if t then
+  local f = fs.open("/build","r")
+  local b = f.readAll()
+  f.close()
+  if b then
+    print("You have Impulse "..b..".")
+  else
+    print("You have an unknown build of Impulse.")
+  end
   term.write("Would you like to install Impulse "..t.readAll().."? [Y/N]")
   local event
   local key

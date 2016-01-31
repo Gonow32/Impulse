@@ -29,7 +29,7 @@ if not side then
       end
     elseif e[1] == "peripheral" then
       if peripheral.getType(e[2]) == "drive" then
-        side = v
+        side = e[2]
         break
       end
     end

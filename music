@@ -27,6 +27,11 @@ if not side then
       if e[3] >= 2 and e[3] <= 5 and e[4] == h-1 then
         return
       end
+    elseif e[1] == "peripheral" tehn
+      if peripheral.getType(e[2]) == "drive" then
+        side = v
+        break
+      end
     end
   end
 end

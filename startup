@@ -120,5 +120,9 @@ if startBios == true then
     end
   end
 else
+  if conf.firstRun == true then
+    shell.run("/firstRun")
+    os.reboot()
+  end
   shell.run("/gui")
 end

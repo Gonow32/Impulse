@@ -88,6 +88,37 @@ if t then
         return
       end
     end
+    renderUpdater()
+    print("Set first run to true? [Y/N]")
+    local key
+    local event
+    repeat
+      event, key = os.pullEvent("key")
+    until key == keys.y or key == keys.n
+    if key == keys.y then
+      return
+    else
+      local ok, err = pcall(dofile,"main.config")
+      if ok then
+        if type(err) == "table" then
+          err.firstRun = false
+          local t = "return "..textutils.serialize(err)
+          local f = fs.open("main.config","w")
+          f.write(t)
+          f.close()
+        else
+          renderUpdater()
+          print("Error, exiting in 3 seconds")
+          sleep(3)
+          return
+        end
+      else
+        renderUpdater()
+        print("Error, exiting in 3 seconds")
+        sleep(3)
+        return
+      end
+    end
   else
     term.setBackgroundColour(colours.black)
     clearScr()

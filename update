@@ -54,6 +54,8 @@ if t then
     local flist = loadstring(t2.readAll())()
     local onepercent = 100 / #flist
     local percentage = 0
+    local ok, err = pcall(dofile,"main.config")
+    local ok2, err2 = pcall(dofile,"ui.config")
     for i,v in pairs(flist) do
       local t3 = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/master/"..v)
       if t3 then
@@ -98,14 +100,17 @@ if t then
     if key == keys.y then
       return
     else
-      local ok, err = pcall(dofile,"main.config")
-      if ok then
-        if type(err) == "table" then
+      if ok and ok2 then
+        if type(err) == "table" and type(err2) == "table" then
           err.firstRun = false
           local t = "return "..textutils.serialize(err)
+          local t2 = "return "..textutils.serialize(err2)
           local f = fs.open("main.config","w")
           f.write(t)
           f.close()
+          local f2 = fs.open("ui.config","w")
+          f2.write(t2)
+          f2.close()
         else
           renderUpdater()
           print("Error, exiting in 3 seconds")

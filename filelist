@@ -16,4 +16,5 @@ return {
   "FloppyLoader",
   "music",
   "update",
+  "build",
 }

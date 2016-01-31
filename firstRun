@@ -57,12 +57,12 @@ term.setCursorPos(2,3)
 term.write("Computer Label: ")
 local input = read()
 os.setComputerLabel(input)
-local ok, err = dofile("main.config")
+local ok, err = pcall(dofile("main.config"))
 if ok then
   if type(err) == "table" then
     err.sConsoleName = settings.sConsoleName
     err.firstRun = false
-    local ok2, err2 = dofile("ui.config")
+    local ok2, err2 = pcall(dofile("ui.config"))
     if ok2 then
       if type(err2) == "table" then
         err2.nBackgroundColour = settings.nBackgroundColour

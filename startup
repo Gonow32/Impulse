@@ -23,8 +23,8 @@ end
 
 local biosMenu = {
   {
-    sName = "Configuration",
-    fFunction = function() end,
+    sName = "Shell",
+    fFunction = function() term.setBackgroundColour(colours.black) term.clear() term.setCursorPos(1,1) shell.run("shell") end,
   },
   {
     sName = "File Manager",

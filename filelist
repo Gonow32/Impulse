@@ -17,4 +17,5 @@ return {
   "music",
   "update",
   "build",
+  "firstRun",
 }

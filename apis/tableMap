@@ -66,6 +66,8 @@ function loadMap(file)
     if type(err) == "table" then
       if isType(err, Map) then
         return err
+      else
+        error("not a map")
       end
     else
       error("invalid file")

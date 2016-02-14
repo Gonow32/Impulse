@@ -54,9 +54,7 @@ function createMap(width, height, bgColour)
   for i = 1,width do
     tempMap.tContents[i] = {}
     for i2 = 1,height do
-      tempMap.tContents[i][i2] = {
-        nColour = bgColour,
-      }
+      tempMap.tContents[i][i2] = bgColour
     end
   end
   return tempMap
@@ -110,7 +108,7 @@ function render(game, xOffset, yOffset)
     term.clear()
     for w = 1, game.tMap.nWidth do
       for h = 1, game.tMap.nHeight do
-        paintutils.drawPixel(w+xOffset,h+yOffset,game.tMap.tContents[w][h].nColour)
+        paintutils.drawPixel(w+xOffset,h+yOffset,game.tMap.tContents[w][h])
       end
     end
     term.setCursorPos(game.tPlayer.nX + xOffset, game.tPlayer.nY + yOffset)
@@ -147,7 +145,7 @@ function moveUp(game)
     local y = game.tPlayer.nY
     if (y-1) >= 1 and (y-1) <= game.tMap.nHeight then
       if game.tMap.tContents[x][y-1] then
-        if game.tMap.tContents[x][y-1].nColour == bgColour then
+        if game.tMap.tContents[x][y-1] == bgColour then
           move(game,x,y-1)
           return true
         else
@@ -171,7 +169,7 @@ function moveDown(game)
     local y = game.tPlayer.nY
     if (y+1) >= 1 and (y+1) <= game.tMap.nHeight then
       if game.tMap.tContents[x][y+1] then
-        if game.tMap.tContents[x][y+1].nColour == bgColour then
+        if game.tMap.tContents[x][y+1] == bgColour then
           move(game,x,y+1)
           return true
         else
@@ -195,7 +193,7 @@ function moveLeft(game)
     local y = game.tPlayer.nY
     if (x-1) >= 1 and (x-1) <= game.tMap.nWidth then
       if game.tMap.tContents[x-1][y] then
-        if game.tMap.tContents[x-1][y].nColour == bgColour then
+        if game.tMap.tContents[x-1][y] == bgColour then
           move(game,x-1,y)
           return true
         else
@@ -219,7 +217,7 @@ function moveRight(game)
     local y = game.tPlayer.nY
     if (x+1) >= 1 and (x+1) <= game.tMap.nWidth then
       if game.tMap.tContents[x+1][y] then
-        if game.tMap.tContents[x+1][y].nColour == bgColour then
+        if game.tMap.tContents[x+1][y] == bgColour then
           move(game,x+1,y)
           return true
         else

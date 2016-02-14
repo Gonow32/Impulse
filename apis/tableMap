@@ -60,6 +60,21 @@ function createMap(width, height, bgColour)
   return tempMap
 end
 
+function loadMap(file)
+  local ok, err = pcall(dofile, file)
+  if ok then
+    if type(err) == "table" then
+      if isType(err, Map) then
+        return err
+      end
+    else
+      error("invalid file")
+    end
+  else
+    error("invalid file")
+  end
+end
+
 function createPlayer(bgColour, sText, x, y)
   if not bgColour then
     error("bgColour expected")

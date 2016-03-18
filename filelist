@@ -7,6 +7,7 @@ return {
   "menu/music",
   "menu/update",
   "menu/info",
+  "menu/uibuild",
   "apis/tableMap",
   "gamelib",
   "gui",
@@ -21,4 +22,5 @@ return {
   "build",
   "firstRun",
   "info",
+  "uibuild",
 }

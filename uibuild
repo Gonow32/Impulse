@@ -1,4 +1,4 @@
---Impulse UI Builder by Gonow32 and soon MultMine unless I kill myself (it's possible)
+--Impulse UI Builder by Gonow32 and MultMine
 --Only for use in the Impulse console
 os.pullEvent = os.pullEventRaw
 local w, h = term.getSize()
@@ -70,8 +70,8 @@ end
 local names = {
   nBackgroundColour = "Background Colour",
   sSystemName = "Name",
-  nMenuText = "Menu Colour",
-  nMenuColour = "Menu Text Colour",
+  nMenuText = "Menu Text Colour",
+  nMenuColour = "Menu Colour",
   sBackground = "Background",
   nMenuBarColour = "Menu Bar Colour",
   nTextColour = "Text Colour",

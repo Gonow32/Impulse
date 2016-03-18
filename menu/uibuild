@@ -1,0 +1,4 @@
+return {
+  sName = "Themes",
+  fFunction = function() shell.run("/uibuild") end,
+}

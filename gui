@@ -116,6 +116,7 @@ while true do
     elseif menuActive == 1 and (e[4]-1) <= #menuItems and e[3] >= 1 and e[3] <= 10 then
       local func = menuItems[e[4]-1]
       func.fFunction()
+      loadTheme()
       menuActive = 0
       drawDesktop()
     else

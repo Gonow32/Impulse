@@ -1,0 +1,281 @@
+--Impulse UI Builder by Gonow32 and soon MultMine unless I kill myself (it's possible)
+--Only for use in the Impulse console
+os.pullEvent = os.pullEventRaw
+local w, h = term.getSize()
+local settings = {}
+local defaults = {
+  nBackgroundColour = 1,
+  sSystemName = "Impulse",
+  nMenuText = 32768,
+  nMenuColour = 256,
+  sBackground = "gui",
+  nMenuBarColour = 128,
+  nTextColour = 32768,
+  nMenuBarText = 32768,
+}
+
+local numbers = {
+  nBackgroundColour = true,
+  nMenuText = true,
+  nMenuColour = true,
+  nMenuBarColour = true,
+  nTextColour = true,
+  nMenuBarText = true,
+}
+
+local numberIndex = {}
+
+if not fs.isDir("/themes") then
+  if fs.exists("/themes") then
+    fs.delete("/themes")
+  end
+  fs.makeDir("/themes")
+end
+
+local function colourPicker(old, message)
+  local current = math.log(old) / math.log(2)
+  -- first line is already code wizardry
+  local function redraw()
+    term.setBackgroundColour(colours.lightGrey)
+    term.clear()
+    term.setCursorPos(1, 1)
+    term.setBackgroundColour(colours.grey)
+    term.clearLine()
+    term.setTextColour(colours.black)
+    printCentered(message, 1)
+    term.setCursorPos(2, 3)
+    for i = 0, 15 do
+      term.setBackgroundColour(2^i)
+      term.write(i == current and "#" or " ")
+    end
+    term.setBackgroundColour(colours.lightGrey)
+    term.setCursorPos(2, 5)
+    term.write("Enter: apply, terminate: cancel")
+    term.setCursorPos(2, 6)
+    term.write("Scroll to change colour")
+  end
+  while true do
+    redraw()
+    local ev = {os.pullEventRaw()}
+    if ev[1] == "terminate" then
+      return old
+    elseif ev[1] == "key" and ev[2] == keys.enter then
+      return 2^current
+    elseif ev[1] == "mouse_scroll" then
+      current = (current + ev[2]) % 16
+    end
+  end
+end
+
+local names = {
+  nBackgroundColour = "Background Colour",
+  sSystemName = "Name",
+  nMenuText = "Menu Colour",
+  nMenuColour = "Menu Text Colour",
+  sBackground = "Background",
+  nMenuBarColour = "Menu Bar Colour",
+  nTextColour = "Text Colour",
+  nMenuBarText = "Menu Bar Text Colour",
+}
+
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function printCentered(string,y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  term.write(string)
+end
+
+function themeLoad(file)
+  local ok, err = pcall(dofile,file)
+  if ok then
+    if type(err) == "table" then
+      for i,v in pairs(defaults) do
+        if err[i] then
+          if type(err[i]) == type(v) then
+            settings[i] = err[i]
+          else
+            settings[i] = v
+          end
+        else
+          settings[i] = v
+        end
+      end
+      for i,v in pairs(err) do
+        if not settings[i] then
+          if v ~= nil then
+            settings[i] = v
+          end
+        end
+      end
+      local count = 0
+      for i,v in pairs(settings) do
+        count = count + 1
+        numberIndex[count] = i
+      end
+    else
+      for i,v in pairs(defaults) do
+        settings[i] = v
+      end
+      local count = 0
+      for i,v in pairs(settings) do
+        count = count + 1
+        numberIndex[count] = i
+      end
+    end
+    --return
+  else
+    for i,v in pairs(defaults) do
+      settings[i] = v
+    end
+    local count = 0
+    for i,v in pairs(settings) do
+      count = count + 1
+      numberIndex[count] = i
+    end
+    --error(textutils.serialize(settings))
+  end
+end
+
+function renderMain()
+  term.setBackgroundColour(colours.lightGrey)
+  term.setTextColour(colours.black)
+  clearScr()
+  term.setBackgroundColour(colours.grey)
+  term.clearLine()
+  printCentered("Impulse Themes",1)
+  term.setCursorPos(w-1,1)
+  term.setTextColour(colours.black)
+  term.write("X")
+  term.setCursorPos(1,h)
+  term.clearLine()
+  term.write("Set  Open  Save")
+  term.setCursorPos(1,2)
+  term.setBackgroundColour(colours.lightGrey)
+  term.setTextColour(colours.black)
+  local count = 1
+  for i,v in pairs(numberIndex) do
+    term.setCursorPos(2,count+2)
+    if names[v] then
+      if numbers[v] then
+        local colour = v
+        for i2,v2 in pairs(colours) do
+          if v2 == settings[v] then
+            colour = i2
+            break
+          end
+        end
+        print(names[v]..": "..tostring(colour))
+      else
+        print(names[v]..": "..tostring(settings[v]))
+      end
+    else
+      print(v..": "..tostring(settings[v]))
+    end
+    count = count + 1
+  end
+end
+
+--print(colourPicker(1, "Testing"))
+
+--sleep(2)
+
+themeLoad("/ui.config")
+while true do
+  renderMain()
+  local e = {os.pullEvent()}
+  if e[1] == "mouse_click" then
+    if e[3] == w-1 and e[4] == 1 then
+      term.setBackgroundColour(colours.black)
+      term.setTextColour(colours.white)
+      clearScr()
+      return
+    elseif numberIndex[e[4]-2] then
+      if e[3] >= 2 then
+        local name
+        local originalName
+        for i,v in pairs(settings) do
+          if i == numberIndex[e[4]-2] then
+            name = i
+            originalName = i
+            break
+          end
+        end
+        if names[name] then
+          name = names[name]
+        end
+        if name ~= nil then
+          local length = #name + 2 + #tostring(settings[numberIndex[e[4]-2]])
+          if numbers[name] then
+            length = #name + 2 + #numbers[name]
+          end
+          if e[3] <= (length + 1) then
+            if numbers[originalName] then
+              settings[numberIndex[e[4]-2]] = colourPicker(1,name)
+            else
+              term.setBackgroundColour(colours.lightGrey)
+              term.setTextColour(colours.black)
+              term.clear()
+              term.setCursorPos(1,1)
+              term.setBackgroundColour(colours.grey)
+              term.clearLine()
+              printCentered(name,1)
+              term.setBackgroundColour(colours.lightGrey)
+              term.setCursorPos(2,3)
+              term.write(name..": ")
+              settings[numberIndex[e[4]-2]] = read()
+            end
+          end
+        end
+      end
+    elseif e[3] >= 1 and e[3] <= 3 and e[4] == h then
+      term.setCursorPos(1,h)
+      term.setBackgroundColour(colours.grey)
+      term.setTextColour(colours.black)
+      term.clearLine()
+      term.write("Are you sure? [Y/N]")
+      local key
+      repeat
+        local event,key2 = os.pullEvent()
+        if event == "key" then
+          key = key2
+        end
+      until key == keys.y or key == keys.n
+      if key == keys.y then
+        local t = textutils.serialize(settings)
+        t = "return "..t
+        local f = fs.open("/ui.config","w")
+        f.write(t)
+        f.close()
+      end
+    elseif e[3] >= 6 and e[3] <= 9 and e[4] == h then
+      term.setCursorPos(1,h)
+      term.setBackgroundColour(colours.grey)
+      term.setTextColour(colours.black)
+      term.clearLine()
+      term.write("File Name: ")
+      local fName = read()
+      themeLoad("/themes/"..fName)
+    elseif e[3] >= 12 and e[3] <= 15 and e[4] == h then
+      term.setCursorPos(1,h)
+      term.setBackgroundColour(colours.grey)
+      term.setTextColour(colours.black)
+      term.clearLine()
+      term.write("Save As: ")
+      local fName = read()
+      local t = textutils.serialize(settings)
+      t = "return "..t
+      local f = fs.open("/themes/"..fName,"w")
+      f.write(t)
+      f.close()
+    end
+  elseif e[1] == "terminate" then
+    term.setBackgroundColour(colours.black)
+    term.setTextColour(colours.white)
+    clearScr()
+    return
+  end
+end

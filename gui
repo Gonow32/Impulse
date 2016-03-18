@@ -1,6 +1,6 @@
 local w,h = term.getSize()
 local menuActive = 0
-local config = dofile("ui.config")
+local config = {}
 local temp = fs.list("menu")
 local menuItems = {}
 for i,v in pairs(temp) do
@@ -15,6 +15,39 @@ if not fs.isDir("/apis") then
 end
 for i,v in pairs(fs.list("/apis")) do
   os.loadAPI("/apis/"..v)
+end
+
+function loadTheme()
+  local ok, err = pcall(dofile,"/ui.config")
+  local def = {
+      sSystemName = "Impulse",
+      sBackground = "gui",
+      nMenuText = 32768,
+      nMenuBarText = 32768,
+      nMenuBarColour = 128,
+      nBackgroundColour = 1,
+      nTextColour = 32768,
+      nMenuColour = 256,
+    }
+  if ok then
+    if type(err) == "table" then
+      for i,v in pairs(def) do
+        if err[i] then
+          config[i] = err[i]
+        else
+          config[i] = v
+        end
+      end
+    else
+      for i,v in pairs(def) do
+        config[i] = v
+      end
+    end
+  else
+    for i,v in pairs(def) do
+      config[i] = v
+    end
+  end
 end
 
 function clearScr()
@@ -69,6 +102,7 @@ function drawDesktop()
   term.current().setVisible(true)
 end
 
+loadTheme()
 while true do
   drawDesktop()
   local e = {os.pullEvent()}

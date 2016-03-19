@@ -53,7 +53,7 @@ local function fileBrowser(title, new)
     if currentDir ~= "/" and currentDir ~= "" then
       items[1] = ".."
     end
-    for i,v in pairs(fs.list(currentDir)) then
+    for i,v in pairs(fs.list(currentDir)) do
       items[i+1] = v
     end
     selected = 1

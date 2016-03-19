@@ -84,10 +84,10 @@ local function fileBrowser(title, new)
         term.setTextColour(colours.black)
       else
         term.setCursorPos(4,i+1)
-        if fs.isDir(currentDir..items[num]) then
+        if fs.isDir(currentDir..items[i]) then
           term.setTextColour(colours.green)
         end
-        term.write(items[num])
+        term.write(items[i])
         term.setTextColour(colours.black)
       end
     end

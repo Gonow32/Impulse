@@ -1,5 +1,5 @@
 --Impulse UI Builder by Gonow32 and MultMine
---Only for use in the Impulse console
+--Only for use in the Impulse game console
 os.pullEvent = os.pullEventRaw
 local w, h = term.getSize()
 local settings = {}

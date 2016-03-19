@@ -25,11 +25,115 @@ local numbers = {
 
 local numberIndex = {}
 
+function clearScr()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+function printCentered(string,y)
+  local x = (w/2)-(#string/2)
+  term.setCursorPos(x,y)
+  term.write(string)
+end
+
 if not fs.isDir("/themes") then
   if fs.exists("/themes") then
     fs.delete("/themes")
   end
   fs.makeDir("/themes")
+end
+
+local function fileBrowser(title, new)
+  local currentDir = "/"
+  local items = {}
+  local selected = 1
+  
+  local function populate()
+    items = {}
+    if currentDir ~= "/" and currentDir ~= "" then
+      items[1] == ".."
+    end
+    for i,v in pairs(fs.list(currentDir)) then
+      items[i+1] = v
+    end
+    selected = 1
+  end
+  
+  local function render()
+    term.setBackgroundColour(colours.lightGrey)
+    term.setTextColour(colours.black)
+    clearScr()
+    term.setBackgroundColour(colours.grey)
+    term.clearLine()
+    printCentered(title,1)
+    term.setCursorPos(1,h)
+    term.clearLine()
+    local t = ""
+    if new == true then
+      t = " [N] New"
+    end
+    printCentered("[Enter] Open"..t,h)
+    for i,v in pairs(items) do
+      if selected == i then
+        term.setCursorPos(2,i+2)
+        term.write("> "..v)
+      else
+        term.setCursorPos(4,i+2)
+      end
+    end
+  end
+  
+  while true do
+    render()
+    local e = {os.pullEvent()}
+    if e[1] == "key" then
+      if e[2] == keys.up then
+        if selected == 1 then
+          selected = #items
+        else
+          selected = selected - 1
+        end
+      elseif e[2] == keys.down then
+        if selected == #items then
+          selected = 1
+        else
+          selected = selected + 1
+        end
+      elseif e[2] == keys.enter then
+        if items[selected] == ".." then
+          local secondSlash = -1
+          local slash = #currentDir
+          for i = 1,#currentDir do
+            if currentDir:sub(i,i) == "/" then
+              if i ~= slash then
+                secondSlash = i
+              end
+            end
+          end
+          if secondSlash == -1 then
+            currentDir = "/"
+            populate()
+          else
+            currentDir = currentDir:sub(1,secondSlash)
+            populate()
+          end
+        elseif fs.isDir(items[selected]) then
+          currentDir = currentDir..items[selected].."/"
+          populate()
+        else
+          return "exists", currentDir..items[selected]
+        end
+      elseif e[2] == keys.n and new == true then
+        term.setCursorPos(1,h)
+        term.setBackgroundColour(colours.grey)
+        term.setTextColour(colours.black)
+        term.clearLine()
+        term.write("New File: ")
+        local fileName = currentDir..read()
+        return "new", fileName
+      end
+    end
+  end
 end
 
 local function colourPicker(old, message)
@@ -77,17 +181,6 @@ local names = {
   nTextColour = "Text Colour",
   nMenuBarText = "Menu Bar Text Colour",
 }
-
-function clearScr()
-  term.clear()
-  term.setCursorPos(1,1)
-end
-
-function printCentered(string,y)
-  local x = (w/2)-(#string/2)
-  term.setCursorPos(x,y)
-  term.write(string)
-end
 
 function themeLoad(file)
   local ok, err = pcall(setfenv(loadfile(file),{colours = colours, colors = colors}))
@@ -224,6 +317,14 @@ while true do
           if e[3] <= (length + 1) then
             if numbers[originalName] then
               settings[numberIndex[e[4]-2]] = colourPicker(1,name)
+            elseif originalName == "sBackground" then
+              local status, file = fileBrowser("Select Background",true)
+              if status == "exists" then
+                settings[numberIndex[e[4]-2]] = file
+              elseif status == "new" then
+                shell.run("paint",file)
+                settings[numberIndex[e[4]-2]] = file
+              end
             else
               term.setBackgroundColour(colours.lightGrey)
               term.setTextColour(colours.black)

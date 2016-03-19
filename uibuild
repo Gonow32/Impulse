@@ -90,7 +90,7 @@ function printCentered(string,y)
 end
 
 function themeLoad(file)
-  local ok, err = pcall(dofile,file)
+  local ok, err = pcall(setfenv(loadfile(file),{colours = colours, colors = colors}))
   if ok then
     if type(err) == "table" then
       for i,v in pairs(defaults) do

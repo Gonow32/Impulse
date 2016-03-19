@@ -51,7 +51,7 @@ local function fileBrowser(title, new)
   local function populate()
     items = {}
     if currentDir ~= "/" and currentDir ~= "" then
-      items[1] == ".."
+      items[1] = ".."
     end
     for i,v in pairs(fs.list(currentDir)) then
       items[i+1] = v

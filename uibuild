@@ -77,6 +77,7 @@ local function fileBrowser(title, new)
         term.write("> "..v)
       else
         term.setCursorPos(4,i+2)
+        term.write(v)
       end
     end
   end

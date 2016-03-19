@@ -56,6 +56,9 @@ if t then
     local percentage = 0
     local ok, err = pcall(dofile,"main.config")
     local ok2, err2 = pcall(dofile,"ui.config")
+    renderUpdater()
+    term.setCursorPos(2,3)
+    print("Updating Impulse...")
     for i,v in pairs(flist) do
       local t3 = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/master/"..v)
       if t3 then
@@ -65,8 +68,6 @@ if t then
           f.write(t4)
         end
         f.close()
-        local x,y = term.getCursorPos()
-        print("Downloaded "..v)
         percentage = percentage + onepercent
         local sp = 1
         local found = false
@@ -81,16 +82,23 @@ if t then
           sp = #tostring(percentage)
         end
         local sper = "["..tostring(percentage):sub(1,sp).."%]"
-        term.setCursorPos(w-#sper, y+1)
-        term.write(sper)
+        renderUpdater()
+        term.setCursorPos(2,3)
+        print("Updating Impulse...")
+        term.setCursorPos(2, h-1)
+        term.write("Downloaded "..v.." "..sper)
       else
-        printError("Error downloading "..v)
+        renderUpdater()
+        term.setCursorPos(2,h-1)
+        printError("Error downloading "..v.." (Returning to GUI)")
+        sleep(3)
         term.setBackgroundColour(colours.black)
         clearScr()
         return
       end
     end
     renderUpdater()
+    term.setCursorPos(2,3)
     print("Set first run to true? [Y/N]")
     local key
     local event

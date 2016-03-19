@@ -54,7 +54,7 @@ local function fileBrowser(title, new)
       items[1] = ".."
     end
     for i,v in pairs(fs.list(currentDir)) do
-      items[i+1] = v
+      table.insert(items, v)
     end
     selected = 1
   end

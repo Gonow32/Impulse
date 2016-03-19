@@ -92,7 +92,7 @@ function drawDesktop()
   clearScr()
   local image = paintutils.loadImage(config.sBackground)
   local function temp()
-    paintutils.drawImage(image,1,1)
+    paintutils.drawImage(image,1,2)
   end
   local ok, err = pcall(temp)
   drawMenuBar()

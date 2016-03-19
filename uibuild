@@ -210,7 +210,16 @@ while true do
         if name ~= nil then
           local length = #name + 2 + #tostring(settings[numberIndex[e[4]-2]])
           if numbers[name] then
-            length = #name + 2 + #numbers[name]
+            local colName
+            for i,v in pairs(colours) do
+              if settings[numberIndex[e[4]-2]] == v then
+                colName = i
+                break
+              end
+            end
+            if colName then
+              length = #name + 2 + #colName
+            end
           end
           if e[3] <= (length + 1) then
             if numbers[originalName] then

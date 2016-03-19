@@ -18,7 +18,7 @@ for i,v in pairs(fs.list("/apis")) do
 end
 
 function loadTheme()
-  local ok, err = pcall(dofile,"/ui.config")
+  local ok, err = pcall(setfenv(loadfile("/ui.config"),{colours = colours, colors = colors}))
   local def = {
       sSystemName = "Impulse",
       sBackground = "gui",

@@ -1,0 +1,4 @@
+return {
+  sName = "Credits",
+  fFunction = function() shell.run("/credplay") end,
+}

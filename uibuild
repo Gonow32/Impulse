@@ -50,7 +50,8 @@ local function fileBrowser(title, new)
   local offset = 0
   
   local function populate()
-    items = table.sort(fs.list(currentDir))
+    items = fs.list(currentDir)
+    table.sort(items)
     if currentDir ~= "/" and currentDir ~= "" then
       table.insert(items, 1, "..")
     end

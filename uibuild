@@ -47,9 +47,10 @@ local function fileBrowser(title, new)
   local currentDir = "/"
   local items = {}
   local selected = 1
+  local offset = 0
   
   local function populate()
-    items = fs.list(currentDir)
+    items = table.sort(fs.list(currentDir))
     if currentDir ~= "/" and currentDir ~= "" then
       table.insert(items, 1, "..")
     end
@@ -72,12 +73,26 @@ local function fileBrowser(title, new)
     printCentered("[Enter] Open"..t,h)
     term.setBackgroundColour(colours.lightGrey)
     for i,v in pairs(items) do
+      local num = i - offset
       if selected == i then
-        term.setCursorPos(2,i+2)
-        term.write("> "..v)
+        if num >= 2 and num <= h-1 then
+          term.setCursorPos(2,i+1)
+            term.write("> ")
+          if fs.isDir(currentDir..items[i]) then
+            term.setTextColour(colours.green)
+          end
+          term.write(items[i])
+          term.setTextColour(colours.black)
+        end
       else
-        term.setCursorPos(4,i+2)
-        term.write(v)
+        if num >= 2 and num <= h-1 then
+          term.setCursorPos(4,i+1)
+          if fs.isDir(currentDir..items[num]) then
+            term.setTextColour(colours.green)
+          end
+          term.write(items[num])
+          term.setTextColour(colours.black)
+        end
       end
     end
   end
@@ -91,12 +106,18 @@ local function fileBrowser(title, new)
         if selected == 1 then
           selected = #items
         else
+          if (selected - offset) == 1 then
+            offset = offset - 1
+          end
           selected = selected - 1
         end
       elseif e[2] == keys.down then
         if selected == #items then
           selected = 1
         else
+          if (selected + offset) == h-2 then
+            offset = offset + 1
+          end
           selected = selected + 1
         end
       elseif e[2] == keys.enter then

@@ -23,4 +23,6 @@ return {
   "firstRun",
   "info",
   "uibuild",
+  "credits",
+  "credplay",
 }

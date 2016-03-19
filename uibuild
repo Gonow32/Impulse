@@ -77,7 +77,7 @@ local function fileBrowser(title, new)
       local num = i - offset
       if selected == i then
         if num >= 2 and num <= h-1 then
-          term.setCursorPos(2,i+1)
+          term.setCursorPos(2,num+1)
             term.write("> ")
           if fs.isDir(currentDir..items[i]) then
             term.setTextColour(colours.green)
@@ -107,7 +107,7 @@ local function fileBrowser(title, new)
         if selected == 1 then
           selected = #items
         else
-          if (selected - offset) == 1 then
+          if (selected + offset) == 1 then
             offset = offset - 1
           end
           selected = selected - 1
@@ -116,7 +116,7 @@ local function fileBrowser(title, new)
         if selected == #items then
           selected = 1
         else
-          if (selected + offset) == h-2 then
+          if (selected - offset) == h-2 then
             offset = offset + 1
           end
           selected = selected + 1

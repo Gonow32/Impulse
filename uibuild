@@ -49,12 +49,9 @@ local function fileBrowser(title, new)
   local selected = 1
   
   local function populate()
-    items = {}
+    items = fs.list(currentDir)
     if currentDir ~= "/" and currentDir ~= "" then
-      items[1] = ".."
-    end
-    for i,v in pairs(fs.list(currentDir)) do
-      table.insert(items, v)
+      table.insert(items, 1, "..")
     end
     selected = 1
   end
@@ -73,6 +70,7 @@ local function fileBrowser(title, new)
       t = " [N] New"
     end
     printCentered("[Enter] Open"..t,h)
+    term.setBackgroundColour(colours.lightGrey)
     for i,v in pairs(items) do
       if selected == i then
         term.setCursorPos(2,i+2)

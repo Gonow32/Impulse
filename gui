@@ -68,6 +68,7 @@ function drawMenuBar()
   term.setTextColour(config.nMenuBarText)
   printCentered(config.sSystemName,1)
   term.setCursorPos(1,1)
+  term.setTextColour(config.nMenuBarText)
   term.write("Menu")
 end
 

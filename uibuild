@@ -71,7 +71,7 @@ local function fileBrowser(title, new)
     if new == true then
       t = " [N] New"
     end
-    printCentered("[Enter] Open"..t.." [C] Cancel,h)
+    printCentered("[Enter] Open"..t.." [C] Cancel",h)
     term.setBackgroundColour(colours.lightGrey)
     for i,v in pairs(items) do
       if i > offset and i < offset + h - 1 then

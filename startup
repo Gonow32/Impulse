@@ -77,6 +77,8 @@ function slowPrintCentered(string,y)
   textutils.slowPrint(string)
 end
 
+loadstring("/vfs")()
+
 term.setBackgroundColour(colours.grey)
 clearScr()
 term.setTextColour(colours.black)

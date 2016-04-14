@@ -1,3 +1,7 @@
+if fs.native then
+	return false, "VFS already installed"
+end
+
 local function checkArg(argtype, argn, arg)
 	if type(arg) ~= argtype then
 		error("invalid arg #" .. argn .. " (" .. argtype .. " expected, got " .. type(arg) .. ")", 1)
@@ -19,7 +23,14 @@ end
 function fs.cleanPath(path)
 	local parts = {}
 	for match in string.gmatch(path, "[^/]+") do
-		table.insert(parts, match)
+		if match == ".." then
+			if #parts < 1 then
+				error("Invalid path", 1)
+			end
+			table.remove(parts, #parts)
+		else
+			table.insert(parts, match)
+		end
 	end
 	return table.concat(parts, "/")
 end
@@ -128,7 +139,7 @@ function fs.copy(path, target)
 			error("Access denied", 1)
 		end
 		local f1 = p1.open(fs.getProxiedPath(path), "r")
-		local f2 = p2.open(fs.getProxiedPath(path), "w")
+		local f2 = p2.open(fs.getProxiedPath(target), "w")
 		f2.write(f1.readAll())
 		f1.close()
 		f2.close()
@@ -533,18 +544,18 @@ end
 function fs.redirectProxy(parent, dir)
 	local p = {}
 	function p.open(path, mode)
-		return parent.open(fs.combine(dir, path), mode)
+		return parent.open(fs.combine(dir, fs.cleanPath(path)), mode)
 	end
 	for i, v in ipairs({"delete", "getSize", "getFreeSpace", "makeDir", "getDrive", "isReadOnly", "exists", "isDir", "list"}) do
 		p[v] = function(path)
-			return parent[v](fs.combine(dir, path))
+			return parent[v](fs.combine(dir, fs.cleanPath(path)))
 		end
 	end
 	function p.copy(src, dest)
-		return parent.copy(fs.combine(dir, src), fs.combine(dir, dest))
+		return parent.copy(fs.combine(dir, fs.cleanPath(src)), fs.combine(dir, fs.cleanPath(dest)))
 	end
 	function p.move(src, dest)
-		return parent.move(fs.combine(dir, src), fs.combine(dir, dest))
+		return parent.move(fs.combine(dir, fs.cleanPath(src)), fs.combine(dir, fs.cleanPath(dest)))
 	end
 	return p
 end

@@ -61,3 +61,211 @@ end
 function getSystemName()
   return config.sSystemName
 end
+
+function loadTheme()
+  local settings = {}
+  local defaults = {
+    nBackgroundColour = 1,
+    sSystemName = "Impulse",
+    nMenuText = 32768,
+    nMenuColour = 256,
+    sBackground = "gui",
+    nMenuBarColour = 128,
+    nTextColour = 32768,
+    nMenuBarText = 32768,
+  }
+  local ok, err = pcall(setfenv(loadfile(file),{colours = colours, colors = colors}))
+  if ok then
+    if type(err) == "table" then
+      for i,v in pairs(defaults) do
+        if err[i] then
+          if type(err[i]) == type(v) then
+            settings[i] = err[i]
+          else
+            settings[i] = v
+          end
+        else
+          settings[i] = v
+        end
+      end
+      for i,v in pairs(err) do
+        if not settings[i] then
+          if v ~= nil then
+            settings[i] = v
+          end
+        end
+      end
+      local count = 0
+      for i,v in pairs(settings) do
+        count = count + 1
+        numberIndex[count] = i
+      end
+    else
+      for i,v in pairs(defaults) do
+        settings[i] = v
+      end
+      local count = 0
+      for i,v in pairs(settings) do
+        count = count + 1
+        numberIndex[count] = i
+      end
+    end
+  else
+    for i,v in pairs(defaults) do
+      settings[i] = v
+    end
+    local count = 0
+    for i,v in pairs(settings) do
+      count = count + 1
+      numberIndex[count] = i
+    end
+  end
+  return settings
+end
+
+local function fileBrowser(title, new)
+  local currentDir = "/"
+  local items = {}
+  local selected = 1
+  local offset = 0
+  
+  local function populate()
+    items = fs.list(currentDir)
+    table.sort(items)
+    if currentDir ~= "/" and currentDir ~= "" then
+      table.insert(items, 1, "..")
+    end
+    selected = 1
+  end
+  
+  local function render()
+    term.setBackgroundColour(colours.lightGrey)
+    term.setTextColour(colours.black)
+    clearScr()
+    term.setBackgroundColour(colours.grey)
+    term.clearLine()
+    printCentered(title,1)
+    term.setCursorPos(1,h)
+    term.clearLine()
+    local t = ""
+    if new == true then
+      t = " [N] New"
+    end
+    printCentered("[Enter] Open"..t.." [C] Cancel",h)
+    term.setBackgroundColour(colours.lightGrey)
+    for i,v in pairs(items) do
+      if i > offset and i < offset + h - 1 then
+        if selected == i then
+          term.setCursorPos(2,i+1-offset)
+          term.write("> ")
+          if fs.isDir(currentDir..items[i]) then
+            term.setTextColour(colours.lime)
+          end
+          term.write(items[i])
+          term.setTextColour(colours.black)
+        else
+          term.setCursorPos(4,i+1-offset)
+          if fs.isDir(currentDir..items[i]) then
+            term.setTextColour(colours.lime)
+          end
+          term.write(items[i])
+          term.setTextColour(colours.black)
+        end
+      end
+    end
+  end
+  
+  populate()
+  while true do
+    render()
+    local e = {os.pullEvent()}
+    if e[1] == "key" then
+      if e[2] == keys.up then
+        if selected == 1 then
+          selected = #items
+        else
+          selected = selected - 1
+        end
+      elseif e[2] == keys.down then
+        if selected == #items then
+          selected = 1
+        else
+          selected = selected + 1
+        end
+      elseif e[2] == keys.c then
+        return "cancelled"
+      elseif e[2] == keys.enter then
+        if items[selected] == ".." then
+          local secondSlash = -1
+          local slash = #currentDir
+          for i = 1,#currentDir do
+            if currentDir:sub(i,i) == "/" then
+              if i ~= slash then
+                secondSlash = i
+              end
+            end
+          end
+          if secondSlash == -1 then
+            currentDir = "/"
+            populate()
+          else
+            currentDir = currentDir:sub(1,secondSlash)
+            populate()
+          end
+        elseif fs.isDir(items[selected]) then
+          currentDir = currentDir..items[selected].."/"
+          populate()
+        else
+          return "exists", currentDir..items[selected]
+        end
+      elseif e[2] == keys.n and new == true then
+        term.setCursorPos(1,h)
+        term.setBackgroundColour(colours.grey)
+        term.setTextColour(colours.black)
+        term.clearLine()
+        term.write("New File: ")
+        local fileName = currentDir..read()
+        return "new", fileName
+      end
+    end
+    if selected < offset + 1 then
+      offset = selected - 1
+    elseif selected > offset + h - 2 then
+      offset = selected - h + 2
+    end
+  end
+end
+
+local function colourPicker(old, message)
+  local current = math.log(old) / math.log(2)
+  local function redraw()
+    term.setBackgroundColour(colours.lightGrey)
+    term.clear()
+    term.setCursorPos(1, 1)
+    term.setBackgroundColour(colours.grey)
+    term.clearLine()
+    term.setTextColour(colours.black)
+    printCentered(message, 1)
+    term.setCursorPos(2, 3)
+    for i = 0, 15 do
+      term.setBackgroundColour(2^i)
+      term.write(i == current and "#" or " ")
+    end
+    term.setBackgroundColour(colours.lightGrey)
+    term.setCursorPos(2, 5)
+    term.write("Enter: apply, terminate: cancel")
+    term.setCursorPos(2, 6)
+    term.write("Scroll to change colour")
+  end
+  while true do
+    redraw()
+    local ev = {os.pullEventRaw()}
+    if ev[1] == "terminate" then
+      return old
+    elseif ev[1] == "key" and ev[2] == keys.enter then
+      return 2^current
+    elseif ev[1] == "mouse_scroll" then
+      current = (current + ev[2]) % 16
+    end
+  end
+end

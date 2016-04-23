@@ -1,0 +1,63 @@
+local config = {
+  sSystemName = "Impulse",
+  sConsoleName = "Impulse",
+}
+local developerConsole = {}
+local ok, err = pcall(setfenv(loadfile("/main.config"), getfenv()))
+if ok then
+  if err then
+    if type(err) == "table" then
+      for i,v in pairs(err) do
+        config[i] = v
+      end
+    end
+  end
+end
+
+function getVersion()
+  local t = fs.open("build","r")
+  local t2 = t.readAll()
+  t2.close()
+  if t2 then
+    return t2
+  else
+    return "Unknown Version"
+  end
+end
+
+function log(str)
+  if str then
+    if type(str) == "string" then
+      table.insert(developerConsole, string)
+      return true
+    else
+      error("expected string")
+    end
+  else
+    error("expected string")
+  end
+end
+
+function getConsoleContents()
+  local t = {}
+  for i,v in pairs(developerConsole) do
+    t[i] = v
+  end
+  return t
+end
+
+function getConfigSetting(name)
+  if config[name] then
+    return config[name]
+  else
+    return
+  end
+end
+
+function getConsoleName()
+  return config.sConsoleName
+end
+
+function getSystemName()
+  return config.sSystemName
+end

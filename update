@@ -98,40 +98,45 @@ if t then
       end
     end
     renderUpdater()
-    term.setCursorPos(2,3)
-    print("Set first run to true? [Y/N]")
-    local key
-    local event
-    repeat
-      event, key = os.pullEvent("key")
-    until key == keys.y or key == keys.n
-    if key == keys.y then
-      return
-    else
-      if ok and ok2 then
-        if type(err) == "table" and type(err2) == "table" then
-          err.firstRun = false
-          local t = "return "..textutils.serialize(err)
-          local t2 = "return "..textutils.serialize(err2)
-          local f = fs.open("main.config","w")
-          f.write(t)
-          f.close()
-          local f2 = fs.open("ui.config","w")
-          f2.write(t2)
-          f2.close()
-        else
-          renderUpdater()
-          print("Error, exiting in 3 seconds")
-          sleep(3)
-          return
-        end
+    if ok and ok2 then
+      if type(err) == "table" and type(err2) == "table" then
+        err.firstRun = false
+        local t = "return "..textutils.serialize(err)
+        local t2 = "return "..textutils.serialize(err2)
+        local f = fs.open("main.config","w")
+        f.write(t)
+        f.close()
+        local f2 = fs.open("ui.config","w")
+        f2.write(t2)
+        f2.close()
       else
         renderUpdater()
         print("Error, exiting in 3 seconds")
         sleep(3)
         return
       end
+    else
+      renderUpdater()
+      print("Error, exiting in 3 seconds")
+      sleep(3)
+      return
     end
+    term.setCursorPos(2,3)
+    print("The update has finished downloading.")
+    term.setCursorPos((w-1)-7,h-1)
+    term.write("Restart")
+    local clicked = false
+    repeat
+      local e = {os.pullEvent()}
+      if e[1] == "mouse_click" then
+        if e[3] >= (w-1)-7 and e[3] <= w-1 then
+          if e[4] == h-1 then
+            clicked = true
+          end
+        end
+      end
+    until clicked == true
+    os.reboot()
   else
     term.setBackgroundColour(colours.black)
     clearScr()

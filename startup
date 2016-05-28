@@ -74,7 +74,7 @@ end
 function slowPrintCentered(string,y)
   local x = (w/2)-(#string/2)
   term.setCursorPos(x,y)
-  textutils.slowPrint(string)
+  textutils.slowPrint(string, 90)
 end
 
 loadfile("/vfs")

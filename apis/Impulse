@@ -269,3 +269,73 @@ local function colourPicker(old, message)
     end
   end
 end
+
+-- Impulse Multitasking Support
+
+local processes = {}
+
+function startProcess(func,name)
+  processes[#processes+1] = {
+    sName = name,
+    sFilter = nil,
+    cProcess = coroutine.create(func),
+  }
+  coroutine.resume(processes[#processes].cProcess)
+  return true
+end
+
+function deleteProcess(name)
+  local id = -1
+  for i,v in pairs(processes) do
+    if v.sName == name then
+      id = i
+    end
+  end
+  if id == -1 then
+    return false
+  else
+    processes[id] = nil
+    return true
+  end
+end
+
+function listProcesses()
+  local t = {}
+  for i,v in pairs(processes) do
+    t[i] = {sName = v.sName,nID = i}
+  end
+  return t
+end
+
+function handleProcesses()
+  while true do
+    if #processes <= 0 then
+      return
+    end
+    local e = {os.pullEventRaw()}
+    local queue = {}
+    for i,v in pairs(processes) do
+      if coroutine.status(processes[i].cProcess) == "dead" then
+        table.insert(queue,v.sName)
+      elseif v.sFilter == nil or v.sFilter == e[1] then
+        local ok, err = coroutine.resume(processes[i].cProcess,unpack(e))
+        if ok then
+          if err then
+            if type(err) == "string" then
+              processes[i].sFilter = err
+            else
+              processes[i].sFilter = nil
+            end
+          else
+            processes[i].sFilter = nil
+          end
+        else
+          table.insert(queue,v.sName)
+        end
+      end
+    end
+    for i,v in pairs(queue) do
+      deleteProcess(v)
+    end
+  end
+end

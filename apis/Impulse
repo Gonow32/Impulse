@@ -299,6 +299,14 @@ function deleteProcess(name)
   end
 end
 
+function sendMessageToProcess(pname, message)
+  for i,v in pairs(processes) do
+    if v.sName == pname then
+      coroutine.resume(v.cProcess, message)
+    end
+  end
+end
+
 function listProcesses()
   local t = {}
   for i,v in pairs(processes) do

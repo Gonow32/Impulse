@@ -10,6 +10,7 @@ return {
   "menu/uibuild",
   "menu/credits",
   "apis/tableMap",
+  "apis/Impulse",
   "gamelib",
   "gui",
   "ui.config",

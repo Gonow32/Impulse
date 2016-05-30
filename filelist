@@ -11,6 +11,7 @@ return {
   "menu/credits",
   "apis/tableMap",
   "apis/Impulse",
+  "apis/ImpulseGFX",
   "gamelib",
   "gui",
   "ui.config",

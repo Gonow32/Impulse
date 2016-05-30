@@ -18,7 +18,7 @@ function slideFromLeft(colour, width, ypos)
   if animations == true then
     for i = 1, width do
       paintutils.drawLine(i, ypos, i, h, colour)
-      for i = 1, 3 do
+      for i = 1, 10 do
         os.queueEvent("quicksleep")
         os.pullEvent()
       end
@@ -35,7 +35,7 @@ function slideFromRight(colour, width, ypos)
   if animations == true then
     for i = 1, width do
       paintutils.drawLine(w-(i-1), ypos, w-(i-1), h, colour)
-      for i = 1, 3 do
+      for i = 1, 10 do
         os.queueEvent("quicksleep")
         os.pullEvent()
       end

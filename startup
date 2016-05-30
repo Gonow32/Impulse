@@ -29,7 +29,7 @@ if not fs.isDir("/apis") then
 end
 
 for i,v in pairs(fs.list("/apis")) do
-  local ok, err = pcall(os.loadAPI, v)
+  local ok, err = pcall(os.loadAPI, "/apis/"..v)
 end
 
 local biosMenu = {
@@ -90,8 +90,10 @@ end
 
 loadfile("/vfs")
 
-term.setBackgroundColour(colours.grey)
+term.setBackgroundColour(colours.black)
 clearScr()
+ImpulseGFX.initialiseFX()
+ImpulseGFX.slideFromLeft(colours.grey, w, 1)
 term.setTextColour(colours.black)
 printCentered("Press ALT to enter setup.",h-1)
 

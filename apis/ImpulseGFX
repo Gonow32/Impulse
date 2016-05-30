@@ -1,0 +1,42 @@
+local animations = false
+local w, h = term.getSize()
+
+function initialiseFX()
+  if Impulse then
+    if Impulse.getConfigSetting("bEnableAnimations") then
+      if Impulse.getConfigSetting("bEnableAnimations") == true then
+        animations = true
+      end
+    end
+  end
+end
+
+function slideFromLeft(colour, width, ypos)
+  if not ypos then
+    ypos = 1
+  end
+  if animations == true then
+    for i = 1, width do
+      paintutils.drawLine(i, ypos, i, h, colour)
+      os.queueEvent("quicksleep")
+      os.pullEvent()
+    end
+  else
+    paintutils.drawFilledBox(1, ypos, width, h, colour)
+  end
+end
+
+function slideFromRight(colour, width, ypos)
+  if not ypos then
+    ypos = 1
+  end
+  if animations == true then
+    for i = 1, width do
+      paintutils.drawLine(w-(i-1), ypos, w-(i-1), h, colour)
+      os.queueEvent("quicksleep")
+      os.pullEvent()
+    end
+  else
+    paintutils.drawFilledBox(w-(width-1), ypos, width, h, colour)
+  end
+end

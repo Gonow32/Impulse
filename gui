@@ -114,7 +114,7 @@ while true do
       else
         menuActive = 0
       end
-    elseif menuActive == 1 and (e[4]-1) <= #menuItems and e[3] >= 1 and e[3] <= 10 then
+    elseif menuActive == 1 and (e[4]-1) <= #menuItems and (e[4])-1 > 0 and e[3] >= 1 and e[3] <= 10 then
       local func = menuItems[e[4]-1]
       func.fFunction()
       loadTheme()

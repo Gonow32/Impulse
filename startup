@@ -93,9 +93,9 @@ loadfile("/vfs")
 term.setBackgroundColour(colours.black)
 clearScr()
 ImpulseGFX.initialiseFX()
-ImpulseGFX.slideFromLeft(colours.grey, w, 1)
+ImpulseGFX.slideFromLeft(colours.grey, w, 160, 1)
 term.setTextColour(colours.black)
-printCentered("Press ALT to enter setup.",h-1)
+printCentered("Press ALT to enter setup.", h-1)
 
 local startBios = false
 

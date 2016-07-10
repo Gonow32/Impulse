@@ -11,9 +11,7 @@ end
 local proxy = {}
 local nativefs = fs; _G.fs = {}
 local rootfs = nativefs
-function fs.native()
-	return nativefs
-end
+
 function fs.setRoot(_proxy)
 	rootfs = _proxy
 end
@@ -43,10 +41,6 @@ function fs.proxy(path, _proxy)
 	end
 	proxy[path] = _proxy
 end
-function fs.unproxy(path)
-	path = fs.cleanPath(path)
-	proxy[path] = nil
-end
 function fs.getProxy(path)
 	local p, pathbase = rootfs, ""
 	local depth = 0
@@ -62,10 +56,6 @@ function fs.getProxy(path)
 		end
 	end
 	return p, pathbase
-end
-function fs.getProxiedPath(path)
-	local str = string.sub(path, #({fs.getProxy(path)})[2] + 1)
-	return fs.cleanPath(str)
 end
 function fs.listProxy()
 	local t = {}

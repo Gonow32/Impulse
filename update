@@ -1,5 +1,11 @@
 os.pullEvent = os.pullEventRaw
 local w,h = term.getSize()
+local branch = "master"
+if Impulse.getConfigSetting("bBetaBranch") then
+  if Impulse.getConfigSetting("bBetaBranch") == true then
+    branch = "beta"
+  end
+end
 
 function clearScr()
   term.clear()
@@ -24,7 +30,7 @@ function renderUpdater()
 end
 
 renderUpdater()
-local t = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/master/build")
+local t = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/"..branch.."/build")
 if t then
   local f = fs.open("/build","r")
   local b = f.readAll()
@@ -49,7 +55,7 @@ if t then
     return
   end
   renderUpdater()
-  local t2 = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/master/filelist")
+  local t2 = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/"..branch.."/filelist")
   if t2 then
     local flist = loadstring(t2.readAll())()
     local onepercent = 100 / #flist
@@ -60,7 +66,7 @@ if t then
     term.setCursorPos(2,3)
     print("Updating Impulse...")
     for i,v in pairs(flist) do
-      local t3 = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/master/"..v)
+      local t3 = http.get("https://raw.githubusercontent.com/Gonow32/Impulse/"..branch.."/"..v)
       if t3 then
         local f = fs.open("/"..v,"w")
         local t4 = t3.readAll()

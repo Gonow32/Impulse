@@ -117,7 +117,7 @@ while true do
       end
     elseif menuActive == 1 and (e[4]-1) <= #menuItems and (e[4])-1 > 0 and e[3] >= 1 and e[3] <= 10 then
       local func = menuItems[e[4]-1]
-      func.fFunction()
+      setfenv(func.fFunction, getfenv())()
       loadTheme()
       menuActive = 0
       drawDesktop()

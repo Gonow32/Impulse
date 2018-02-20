@@ -49,6 +49,7 @@ function play()
     term.setTextColour(colours.white)
     term.clear()
     printCentered("CubeSpace Entertainment", h/2)
+    sleep(1.5)
     shell.run("/"..fs.combine(mountPath, "startgame"))
   elseif fs.exists(fs.combine(mountPath, "info")) then
     -- RedCast and 1% of multiplatform games
@@ -59,6 +60,7 @@ function play()
       term.setTextColour(colours.white)
       term.clear()
       printCentered("CubeSpace Entertainment", h/2)
+      sleep(1.5)
       shell.run("/"..fs.combine(mountPath, gameInfo.sGameFile))
     end
   end

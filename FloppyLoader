@@ -45,12 +45,20 @@ function play()
   end
   if fs.exists(fs.combine(mountPath, "startgame")) then
     -- RedCube, some multiplatform games
+    term.setBackgroundColour(colours.black)
+    term.setTextColour(colours.white)
+    term.clear()
+    printCentered("CubeSpace Entertainment", h/2)
     shell.run("/"..fs.combine(mountPath, "startgame"))
   elseif fs.exists(fs.combine(mountPath, "info")) then
     -- RedCast and 1% of multiplatform games
     -- it would be a bad idea to run Aurora games
     local gameInfo = setfenv(loadfile(fs.combine(mountPath, "info")), getfenv())()
     if gameInfo.sGameFile then
+      term.setBackgroundColour(colours.black)
+      term.setTextColour(colours.white)
+      term.clear()
+      printCentered("CubeSpace Entertainment", h/2)
       shell.run("/"..fs.combine(mountPath, gameInfo.sGameFile))
     end
   end
